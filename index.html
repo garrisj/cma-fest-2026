@@ -17,56 +17,80 @@
         background-color: #fff;
         color: var(--text-dark);
         margin: 0;
-        padding: 20px;
+        padding: 10px;
     }
     .header { text-align: center; margin-bottom: 12px; }
-    .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+    .header h1 { margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
     
     .legend-container {
-        display: flex; justify-content: center; gap: 15px; margin-bottom: 5px; font-size: 12px; font-weight: bold;
+        display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 5px; font-size: 11px; font-weight: bold;
     }
     .legend-item { display: flex; align-items: center; gap: 6px; }
-    .color-box { width: 14px; height: 14px; border-radius: 2px; }
+    .color-box { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
     .bg-teal { background-color: var(--teal); color: #fff; }
     .bg-orange { background-color: var(--orange); color: #fff; }
     .bg-navy { background-color: var(--navy); color: #fff; }
     
     .voter-legend {
-        text-align: center; font-size: 11px; margin-bottom: 15px; padding: 6px; background-color: var(--bg-cream); border-radius: 6px; line-height: 1.5;
+        text-align: center; font-size: 11px; margin-bottom: 15px; padding: 6px; background-color: var(--bg-cream); border-radius: 6px; line-height: 1.4;
     }
     .dither-sample {
         display: inline-block; width: 12px; height: 12px; background-color: #999; border-radius: 2px; vertical-align: middle; margin-right: 3px;
         background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.4), rgba(255,255,255,0.4) 4px, transparent 4px, transparent 8px);
     }
 
-    /* Calendar Grid Structure */
-    .calendar-wrapper {
-        border: 2px solid #ccc; border-radius: 8px; overflow: hidden; max-width: 1200px; margin: 0 auto;
+    /* Mobile Responsive Scroll Container */
+    .calendar-scroll-container {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
+    .calendar-wrapper {
+        display: inline-block;
+        min-width: 100%;
+        box-sizing: border-box;
+    }
+    
     .cal-header-row {
-        display: grid; grid-template-columns: 50px 1fr 1fr 1fr 1fr; background-color: #ded1bd;
+        display: grid; 
+        grid-template-columns: 50px repeat(4, minmax(230px, 1fr)); /* Prevents columns from compressing on mobile */
+        background-color: #ded1bd;
         border-bottom: 2px solid #ccc;
     }
     .day-header {
-        text-align: center; padding: 8px; font-weight: bold; font-size: 14px; border-left: 1px solid #ccc;
+        text-align: center; padding: 8px; font-weight: bold; font-size: 13px; border-left: 1px solid #ccc;
     }
-    .day-header small { font-weight: normal; font-size: 11px; display: block; }
+    .day-header small { font-weight: normal; font-size: 10px; display: block; }
     
     .cal-body-row {
-        display: grid; grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+        display: grid; 
+        grid-template-columns: 50px repeat(4, minmax(230px, 1fr));
     }
     
-    /* Time Axis (1 hour = 45px, Full Day = 16 hours = 720px) */
+    /* Sticky Time Axis so hours always stay visible while scrolling days */
     .time-axis {
-        position: relative; background-color: #f4f4f4; border-right: 1px solid #ccc; height: 720px; 
+        position: sticky;
+        left: 0;
+        background-color: #f4f4f4;
+        border-right: 2px solid #ccc;
+        height: 720px; 
+        z-index: 25;
+    }
+    .cal-header-row > div:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #ded1bd;
+        z-index: 25;
     }
     .hour-label {
-        position: absolute; right: 6px; transform: translateY(-50%); font-size: 10px; font-weight: bold; color: #777; width: 100%; text-align: right;
+        position: absolute; right: 6px; transform: translateY(-50%); font-size: 9px; font-weight: bold; color: #666; width: 100%; text-align: right;
     }
 
     .day-col {
         position: relative; height: 720px; border-right: 1px solid #e0e0e0;
-        /* Grid lines: 1hr = 45px, 30m = 22.5px */
         background-image: 
             linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
@@ -76,28 +100,41 @@
 
     /* Absolute Positioned Events */
     .event {
-        position: absolute; border-radius: 3px; padding: 3px 5px; 
-        box-shadow: 0 1px 3px rgba(0,0,0,0.3); border-left: 3px solid rgba(0,0,0,0.3); z-index: 10;
+        position: absolute; border-radius: 4px; padding: 2px 4px; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.25); border-left: 3px solid rgba(0,0,0,0.3); z-index: 10;
         display: flex; flex-direction: column; justify-content: center; overflow: hidden;
+        box-sizing: border-box;
     }
-    .time { font-weight: 800; font-size: 8.5px; opacity: 0.9; margin-bottom: 2px; letter-spacing: 0.3px;}
-    .event-body { display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 4px; }
-    .name { font-weight: bold; font-size: 10.5px; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .time { font-weight: 800; font-size: 8px; opacity: 0.9; margin-bottom: 1px; letter-spacing: 0.2px;}
+    .event-body { display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 2px; width: 100%; }
     
-    .voter-badges { display: flex; gap: 2px; flex-shrink: 0; }
+    /* Elegant line-clamping prevents name overflows and text mashups */
+    .name { 
+        font-weight: bold; 
+        font-size: 10px; 
+        line-height: 1.1; 
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        word-break: break-word;
+        flex-grow: 1;
+    }
+    
+    .voter-badges { display: flex; gap: 1px; flex-shrink: 0; }
     .badge {
-        background: rgba(255,255,255,0.95); color: #000; width: 13px; height: 13px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        background: rgba(255,255,255,0.95); color: #000; width: 12px; height: 12px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 7.5px; font-weight: bold; box-shadow: 0 1px 1px rgba(0,0,0,0.15);
     }
     .dithered {
-        background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2) 6px, transparent 6px, transparent 12px);
+        background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 5px, transparent 5px, transparent 10px);
     }
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>CMA Fest Master Schedule 2026</h1>
+    <h1>CMA Fest Master Schedule</h1>
 </div>
 
 <div class="legend-container">
@@ -107,285 +144,287 @@
 </div>
 
 <div class="voter-legend">
-    <strong>Voters:</strong> M: Malinda | K: Kaydence | B: Bryce | J: James | (Unanimous picks include all 4)
+    <strong>Voters:</strong> M: Malinda | K: Kaydence | B: Bryce | J: James
     <br><span class="dither-sample"></span> Striped background = Daytime act also plays a main stage set at Nissan Stadium.
 </div>
 
-<div class="calendar-wrapper">
-    <div class="cal-header-row">
-        <div></div>
-        <div class="day-header">THURSDAY<small>JUN 4</small></div>
-        <div class="day-header">FRIDAY<small>JUN 5</small></div>
-        <div class="day-header">SATURDAY<small>JUN 6</small></div>
-        <div class="day-header">SUNDAY<small>JUN 7</small></div>
-    </div>
-
-    <div class="cal-body-row">
-        <div class="time-axis">
-            <div class="hour-label" style="top: 0px;">9 AM</div>
-            <div class="hour-label" style="top: 45px;">10 AM</div>
-            <div class="hour-label" style="top: 90px;">11 AM</div>
-            <div class="hour-label" style="top: 135px;">12 PM</div>
-            <div class="hour-label" style="top: 180px;">1 PM</div>
-            <div class="hour-label" style="top: 225px;">2 PM</div>
-            <div class="hour-label" style="top: 270px;">3 PM</div>
-            <div class="hour-label" style="top: 315px;">4 PM</div>
-            <div class="hour-label" style="top: 360px;">5 PM</div>
-            <div class="hour-label" style="top: 405px;">6 PM</div>
-            <div class="hour-label" style="top: 450px;">7 PM</div>
-            <div class="hour-label" style="top: 495px;">8 PM</div>
-            <div class="hour-label" style="top: 540px;">9 PM</div>
-            <div class="hour-label" style="top: 585px;">10 PM</div>
-            <div class="hour-label" style="top: 630px;">11 PM</div>
-            <div class="hour-label" style="top: 675px;">12 AM</div>
-            <div class="hour-label" style="top: 720px;">1 AM</div>
+<div class="calendar-scroll-container">
+    <div class="calendar-wrapper">
+        <div class="cal-header-row">
+            <div></div>
+            <div class="day-header">THURSDAY<small>JUN 4</small></div>
+            <div class="day-header">FRIDAY<small>JUN 5</small></div>
+            <div class="day-header">SATURDAY<small>JUN 6</small></div>
+            <div class="day-header">SUNDAY<small>JUN 7</small></div>
         </div>
 
-        <div class="day-col">
-            <div class="event bg-teal dithered" style="top: 90px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">11:00 AM</div>
-                <div class="event-body"><span class="name">R. Dickerson</span><div class="voter-badges"><span class="badge">M</span></div></div>
+        <div class="cal-body-row">
+            <div class="time-axis">
+                <div class="hour-label" style="top: 0px;">9 AM</div>
+                <div class="hour-label" style="top: 45px;">10 AM</div>
+                <div class="hour-label" style="top: 90px;">11 AM</div>
+                <div class="hour-label" style="top: 135px;">12 PM</div>
+                <div class="hour-label" style="top: 180px;">1 PM</div>
+                <div class="hour-label" style="top: 225px;">2 PM</div>
+                <div class="hour-label" style="top: 270px;">3 PM</div>
+                <div class="hour-label" style="top: 315px;">4 PM</div>
+                <div class="hour-label" style="top: 360px;">5 PM</div>
+                <div class="hour-label" style="top: 405px;">6 PM</div>
+                <div class="hour-label" style="top: 450px;">7 PM</div>
+                <div class="hour-label" style="top: 495px;">8 PM</div>
+                <div class="hour-label" style="top: 540px;">9 PM</div>
+                <div class="hour-label" style="top: 585px;">10 PM</div>
+                <div class="hour-label" style="top: 630px;">11 PM</div>
+                <div class="hour-label" style="top: 675px;">12 AM</div>
+                <div class="hour-label" style="top: 720px;">1 AM</div>
             </div>
-            <div class="event bg-orange dithered" style="top: 90px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">11:00 AM</div>
-                <div class="event-body"><span class="name">Red Clay Strays</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 127.5px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">11:50 AM</div>
-                <div class="event-body"><span class="name">Ty Myers</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-orange dithered" style="top: 202.5px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">1:30 PM</div>
-                <div class="event-body"><span class="name">Russell Dickerson</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 240px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">2:20 PM</div>
-                <div class="event-body"><span class="name">ERNEST</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">4:00 PM</div>
-                <div class="event-body"><span class="name">Redferrin</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 352.5px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">4:50 PM</div>
-                <div class="event-body"><span class="name">Vincent Mason</span><div class="voter-badges"><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 390px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">5:40 PM</div>
-                <div class="event-body"><span class="name">Shane Smith</span><div class="voter-badges"><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-navy" style="top: 483.75px; height: 28px; left: 2%; width: 45%;">
-                <div class="time">7:45 PM</div>
-                <div class="event-body"><span class="name">C. Hammack</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 495px; height: 28px; left: 51%; width: 45%;">
-                <div class="time">8:00 PM</div>
-                <div class="event-body"><span class="name">Rhett Akins</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">8:30 PM</div>
-                <div class="event-body"><span class="name">Tucker Wetmore</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 585px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">10:00 PM</div>
-                <div class="event-body"><span class="name">Ella Langley</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 607.5px; height: 28px; left: 2%; width: 45%;">
-                <div class="time">10:30 PM</div>
-                <div class="event-body"><span class="name">G. Wilson</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 615px; height: 28px; left: 51%; width: 45%;">
-                <div class="time">10:40 PM</div>
-                <div class="event-body"><span class="name">Deana Carter</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 652.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">11:30 PM</div>
-                <div class="event-body"><span class="name">Jason Aldean</span></div>
-            </div>
-        </div>
 
-        <div class="day-col">
-            <div class="event bg-teal" style="top: 90px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">11:00 AM</div>
-                <div class="event-body"><span class="name">C. Beckham</span><div class="voter-badges"><span class="badge">K</span></div></div>
+            <div class="day-col">
+                <div class="event bg-teal dithered" style="top: 90px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">11:00 AM</div>
+                    <div class="event-body"><span class="name">R. Dickerson</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-orange dithered" style="top: 90px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">11:00 AM</div>
+                    <div class="event-body"><span class="name">Red Clay Strays</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 127.5px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">11:50 AM</div>
+                    <div class="event-body"><span class="name">Ty Myers</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-orange dithered" style="top: 202.5px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">1:30 PM</div>
+                    <div class="event-body"><span class="name">Russell Dickerson</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 240px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">2:20 PM</div>
+                    <div class="event-body"><span class="name">ERNEST</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">4:00 PM</div>
+                    <div class="event-body"><span class="name">Redferrin</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 352.5px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">4:50 PM</div>
+                    <div class="event-body"><span class="name">Vincent Mason</span><div class="voter-badges"><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 390px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">5:40 PM</div>
+                    <div class="event-body"><span class="name">Shane Smith</span><div class="voter-badges"><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-navy" style="top: 483.75px; height: 28px; left: 2%; width: 45%;">
+                    <div class="time">7:45 PM</div>
+                    <div class="event-body"><span class="name">C. Hammack</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 495px; height: 28px; left: 51%; width: 45%;">
+                    <div class="time">8:00 PM</div>
+                    <div class="event-body"><span class="name">Rhett Akins</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">8:30 PM</div>
+                    <div class="event-body"><span class="name">Tucker Wetmore</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 585px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">10:00 PM</div>
+                    <div class="event-body"><span class="name">Ella Langley</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 607.5px; height: 28px; left: 2%; width: 45%;">
+                    <div class="time">10:30 PM</div>
+                    <div class="event-body"><span class="name">G. Wilson</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 615px; height: 28px; left: 51%; width: 45%;">
+                    <div class="time">10:40 PM</div>
+                    <div class="event-body"><span class="name">Deana Carter</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 652.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">11:30 PM</div>
+                    <div class="event-body"><span class="name">Jason Aldean</span></div>
+                </div>
             </div>
-            <div class="event bg-orange dithered" style="top: 90px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">11:00 AM</div>
-                <div class="event-body"><span class="name">Carly Pearce</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 165px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">12:40 PM</div>
-                <div class="event-body"><span class="name">C. Wesley Godwin</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 202.5px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">1:30 PM</div>
-                <div class="event-body"><span class="name">K. Marlowe</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-orange" style="top: 202.5px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">1:30 PM</div>
-                <div class="event-body"><span class="name">C.W. Godwin</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 240px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">2:20 PM</div>
-                <div class="event-body"><span class="name">Dylan Marlowe</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-orange" style="top: 270px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">3:00 PM</div>
-                <div class="event-body"><span class="name">Clint Black</span><div class="voter-badges"><span class="badge">J</span><span class="badge">M</span><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-teal dithered" style="top: 277.5px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">3:10 PM</div>
-                <div class="event-body"><span class="name">T. Wetmore</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">4:00 PM</div>
-                <div class="event-body"><span class="name">Tyler Braden</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 390px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">5:40 PM</div>
-                <div class="event-body"><span class="name">Dasha</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-navy" style="top: 495px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">8:00 PM</div>
-                <div class="event-body"><span class="name">Jo Dee Messina</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">8:30 PM</div>
-                <div class="event-body"><span class="name">Blake Shelton</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 551.25px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">9:15 PM</div>
-                <div class="event-body"><span class="name">Shaboozey</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 585px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">10:00 PM</div>
-                <div class="event-body"><span class="name">Red Clay Strays</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 611.25px; height: 28px; left: 2%; width: 45%;">
-                <div class="time">10:35 PM</div>
-                <div class="event-body"><span class="name">Band Perry</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 618.75px; height: 28px; left: 51%; width: 45%;">
-                <div class="time">10:45 PM</div>
-                <div class="event-body"><span class="name">Keith Urban</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 652.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">11:30 PM</div>
-                <div class="event-body"><span class="name">Cody Johnson</span></div>
-            </div>
-        </div>
 
-        <div class="day-col">
-            <div class="event bg-orange" style="top: 56.25px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">10:15 AM</div>
-                <div class="event-body"><span class="name">Randy Travis</span><div class="voter-badges"><span class="badge">M</span><span class="badge">B</span></div></div>
+            <div class="day-col">
+                <div class="event bg-teal" style="top: 90px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">11:00 AM</div>
+                    <div class="event-body"><span class="name">C. Beckham</span><div class="voter-badges"><span class="badge">K</span></div></div>
+                </div>
+                <div class="event bg-orange dithered" style="top: 90px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">11:00 AM</div>
+                    <div class="event-body"><span class="name">Carly Pearce</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 165px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">12:40 PM</div>
+                    <div class="event-body"><span class="name">C. Wesley Godwin</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 202.5px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">1:30 PM</div>
+                    <div class="event-body"><span class="name">K. Marlowe</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-orange" style="top: 202.5px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">1:30 PM</div>
+                    <div class="event-body"><span class="name">C.W. Godwin</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 240px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">2:20 PM</div>
+                    <div class="event-body"><span class="name">Dylan Marlowe</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-orange" style="top: 270px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">3:00 PM</div>
+                    <div class="event-body"><span class="name">Clint Black</span><div class="voter-badges"><span class="badge">J</span><span class="badge">M</span><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-teal dithered" style="top: 277.5px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">3:10 PM</div>
+                    <div class="event-body"><span class="name">T. Wetmore</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">4:00 PM</div>
+                    <div class="event-body"><span class="name">Tyler Braden</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 390px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">5:40 PM</div>
+                    <div class="event-body"><span class="name">Dasha</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-navy" style="top: 495px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">8:00 PM</div>
+                    <div class="event-body"><span class="name">Jo Dee Messina</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">8:30 PM</div>
+                    <div class="event-body"><span class="name">Blake Shelton</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 551.25px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">9:15 PM</div>
+                    <div class="event-body"><span class="name">Shaboozey</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 585px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">10:00 PM</div>
+                    <div class="event-body"><span class="name">Red Clay Strays</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 611.25px; height: 28px; left: 2%; width: 45%;">
+                    <div class="time">10:35 PM</div>
+                    <div class="event-body"><span class="name">Band Perry</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 618.75px; height: 28px; left: 51%; width: 45%;">
+                    <div class="time">10:45 PM</div>
+                    <div class="event-body"><span class="name">Keith Urban</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 652.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">11:30 PM</div>
+                    <div class="event-body"><span class="name">Cody Johnson</span></div>
+                </div>
             </div>
-            <div class="event bg-teal" style="top: 127.5px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">11:50 AM</div>
-                <div class="event-body"><span class="name">Nate Smith</span><div class="voter-badges"><span class="badge">M</span><span class="badge">K</span></div></div>
-            </div>
-            <div class="event bg-orange" style="top: 157.5px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">12:30 PM</div>
-                <div class="event-body"><span class="name">Faith/Zeiders</span><div class="voter-badges"><span class="badge">J</span><span class="badge">M</span><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 240px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">2:20 PM</div>
-                <div class="event-body"><span class="name">Josh Ross</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-orange" style="top: 270px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">3:00 PM</div>
-                <div class="event-body"><span class="name">Tanya Tucker</span><div class="voter-badges"><span class="badge">M</span><span class="badge">K</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 277.5px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">3:10 PM</div>
-                <div class="event-body"><span class="name">Midland</span><div class="voter-badges"><span class="badge">J</span><span class="badge">M</span><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">4:00 PM</div>
-                <div class="event-body"><span class="name">Kaitlin Butts</span><div class="voter-badges"><span class="badge">M</span><span class="badge">K</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 390px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">5:40 PM</div>
-                <div class="event-body"><span class="name">Braxton Keith</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-navy" style="top: 495px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">8:00 PM</div>
-                <div class="event-body"><span class="name">Sara Evans</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">8:30 PM</div>
-                <div class="event-body"><span class="name">Carly Pearce</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 551.25px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">9:15 PM</div>
-                <div class="event-body"><span class="name">Zach Top</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 585px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">10:00 PM</div>
-                <div class="event-body"><span class="name">Jordan Davis</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 648.75px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">11:25 PM</div>
-                <div class="event-body"><span class="name">Tim McGraw</span></div>
-            </div>
-        </div>
 
-        <div class="day-col">
-            <div class="event bg-teal" style="top: 22.5px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">9:30 AM</div>
-                <div class="event-body"><span class="name">Brandon Lake</span><div class="voter-badges"><span class="badge">K</span></div></div>
+            <div class="day-col">
+                <div class="event bg-orange" style="top: 56.25px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">10:15 AM</div>
+                    <div class="event-body"><span class="name">Randy Travis</span><div class="voter-badges"><span class="badge">M</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 127.5px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">11:50 AM</div>
+                    <div class="event-body"><span class="name">Nate Smith</span><div class="voter-badges"><span class="badge">M</span><span class="badge">K</span></div></div>
+                </div>
+                <div class="event bg-orange" style="top: 157.5px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">12:30 PM</div>
+                    <div class="event-body"><span class="name">Faith/Zeiders</span><div class="voter-badges"><span class="badge">J</span><span class="badge">M</span><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 240px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">2:20 PM</div>
+                    <div class="event-body"><span class="name">Josh Ross</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-orange" style="top: 270px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">3:00 PM</div>
+                    <div class="event-body"><span class="name">Tanya Tucker</span><div class="voter-badges"><span class="badge">M</span><span class="badge">K</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 277.5px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">3:10 PM</div>
+                    <div class="event-body"><span class="name">Midland</span><div class="voter-badges"><span class="badge">J</span><span class="badge">M</span><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">4:00 PM</div>
+                    <div class="event-body"><span class="name">Kaitlin Butts</span><div class="voter-badges"><span class="badge">M</span><span class="badge">K</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 390px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">5:40 PM</div>
+                    <div class="event-body"><span class="name">Braxton Keith</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-navy" style="top: 495px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">8:00 PM</div>
+                    <div class="event-body"><span class="name">Sara Evans</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">8:30 PM</div>
+                    <div class="event-body"><span class="name">Carly Pearce</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 551.25px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">9:15 PM</div>
+                    <div class="event-body"><span class="name">Zach Top</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 585px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">10:00 PM</div>
+                    <div class="event-body"><span class="name">Jordan Davis</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 648.75px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">11:25 PM</div>
+                    <div class="event-body"><span class="name">Tim McGraw</span></div>
+                </div>
             </div>
-            <div class="event bg-orange" style="top: 157.5px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">12:30 PM</div>
-                <div class="event-body"><span class="name">Brandon Lake</span><div class="voter-badges"><span class="badge">K</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 165px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">12:40 PM</div>
-                <div class="event-body"><span class="name">P. Block</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 202.5px; height: 30px; left: 2%; width: 45%;">
-                <div class="time">1:30 PM</div>
-                <div class="event-body"><span class="name">Waylon Wyatt</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-orange" style="top: 202.5px; height: 30px; left: 51%; width: 45%;">
-                <div class="time">1:30 PM</div>
-                <div class="event-body"><span class="name">A. McBryde</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">4:00 PM</div>
-                <div class="event-body"><span class="name">Chase Matthew</span><div class="voter-badges"><span class="badge">M</span></div></div>
-            </div>
-            <div class="event bg-teal" style="top: 352.5px; height: 30px; left: 2%; width: 94%;">
-                <div class="time">4:50 PM</div>
-                <div class="event-body"><span class="name">Marcus King</span><div class="voter-badges"><span class="badge">B</span></div></div>
-            </div>
-            <div class="event bg-navy" style="top: 495px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">8:00 PM</div>
-                <div class="event-body"><span class="name">Clay Walker</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">8:30 PM</div>
-                <div class="event-body"><span class="name">R. Dickerson</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 547.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">9:10 PM</div>
-                <div class="event-body"><span class="name">B. Zimmerman</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 577.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">9:50 PM</div>
-                <div class="event-body"><span class="name">Riley Green</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 607.5px; height: 28px; left: 2%; width: 94%;">
-                <div class="time">10:30 PM</div>
-                <div class="event-body"><span class="name">HARDY</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 641.25px; height: 28px; left: 2%; width: 45%;">
-                <div class="time">11:15 PM</div>
-                <div class="event-body"><span class="name">S. Wilson Jr.</span></div>
-            </div>
-            <div class="event bg-navy" style="top: 652.5px; height: 28px; left: 51%; width: 45%;">
-                <div class="time">11:30 PM</div>
-                <div class="event-body"><span class="name">Luke Bryan</span></div>
+
+            <div class="day-col">
+                <div class="event bg-teal" style="top: 22.5px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">9:30 AM</div>
+                    <div class="event-body"><span class="name">Brandon Lake</span><div class="voter-badges"><span class="badge">K</span></div></div>
+                </div>
+                <div class="event bg-orange" style="top: 157.5px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">12:30 PM</div>
+                    <div class="event-body"><span class="name">Brandon Lake</span><div class="voter-badges"><span class="badge">K</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 165px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">12:40 PM</div>
+                    <div class="event-body"><span class="name">P. Block</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 202.5px; height: 30px; left: 2%; width: 45%;">
+                    <div class="time">1:30 PM</div>
+                    <div class="event-body"><span class="name">Waylon Wyatt</span><div class="voter-badges"><span class="badge">K</span><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-orange" style="top: 202.5px; height: 30px; left: 51%; width: 45%;">
+                    <div class="time">1:30 PM</div>
+                    <div class="event-body"><span class="name">A. McBryde</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 315px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">4:00 PM</div>
+                    <div class="event-body"><span class="name">Chase Matthew</span><div class="voter-badges"><span class="badge">M</span></div></div>
+                </div>
+                <div class="event bg-teal" style="top: 352.5px; height: 30px; left: 2%; width: 94%;">
+                    <div class="time">4:50 PM</div>
+                    <div class="event-body"><span class="name">Marcus King</span><div class="voter-badges"><span class="badge">B</span></div></div>
+                </div>
+                <div class="event bg-navy" style="top: 495px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">8:00 PM</div>
+                    <div class="event-body"><span class="name">Clay Walker</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 517.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">8:30 PM</div>
+                    <div class="event-body"><span class="name">R. Dickerson</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 547.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">9:10 PM</div>
+                    <div class="event-body"><span class="name">B. Zimmerman</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 577.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">9:50 PM</div>
+                    <div class="event-body"><span class="name">Riley Green</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 607.5px; height: 28px; left: 2%; width: 94%;">
+                    <div class="time">10:30 PM</div>
+                    <div class="event-body"><span class="name">HARDY</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 641.25px; height: 28px; left: 2%; width: 45%;">
+                    <div class="time">11:15 PM</div>
+                    <div class="event-body"><span class="name">S. Wilson Jr.</span></div>
+                </div>
+                <div class="event bg-navy" style="top: 652.5px; height: 28px; left: 51%; width: 45%;">
+                    <div class="time">11:30 PM</div>
+                    <div class="event-body"><span class="name">Luke Bryan</span></div>
+                </div>
             </div>
         </div>
     </div>
